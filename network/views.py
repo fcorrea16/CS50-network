@@ -92,7 +92,7 @@ def post(request, post_id):
 
     # Query for requested post
     try:
-        post = Post.objects.get(user=request.user, pk=post_id)
+        post = Post.objects.get(posted_by=request.user, pk=post_id)
     except post.DoesNotExist:
         return JsonResponse({"error": "post not found."}, status=404)
 
@@ -106,6 +106,39 @@ def post(request, post_id):
         print(data)
         print(data["likes"])
         print(data.get("likes"))
+        # data.get('likes') + 1 =
+
+        # if data.get("read") is not None:
+        #     email.read = data["read"]
+        # if data.get("archived") is not None:
+        #     email.archived = data["archived"]
+        # email.save()
+        return HttpResponse(status=204)
+
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
+
+def like(request, like_id):
+
+    # Query for requested post
+    try:
+        like = Like.objects.get(liked_by=request.user, pk=like_id)
+    except post.DoesNotExist:
+        return JsonResponse({"error": "post not found."}, status=404)
+
+    # Return post contents
+    if request.method == "GET":
+        return JsonResponse(like.serialize())
+
+    # Update whether post is read or should be archived
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        print(data)
+        # print(data["likes"])
+        # print(data.get("likes"))
         # data.get('likes') + 1 =
 
         # if data.get("read") is not None:

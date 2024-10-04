@@ -17,6 +17,7 @@ class Like(models.Model):
         return {
             "id": self.id,
             "liked": self.liked,
+            "liked post": self.liked_post.id
         }
 
     def __str__(self):

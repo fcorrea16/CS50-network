@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function like(id) {
-    fetch('network/' + id)
+    fetch('post/' + id)
         .then(response => response.json())
         .then(post => {
-            fetch('/network/' + post.id, {
+            fetch('/post/' + post.id, {
                 method: 'PUT',
                 body: JSON.stringify({})
             })
