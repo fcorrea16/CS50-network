@@ -1,0 +1,32 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+
+<div class="add-post-section col-sm-12">
+    <h2>Something to say?</h2>
+    <form action="{% url 'add' %}" method="post" class="add-post">
+        {% csrf_token %}
+        <textarea id="new-content" name="new-content"></textarea>
+        <input type="submit" class="btn btn-primary">
+    </form>
+</div>
+
+<div class="post-section col-sm-12">
+    <h2>All posts</h2>
+    <hr>
+    {% for post in posts%}
+    <div id="post-{{ post.id }}" class="post">
+        <p class="post-content">{{post.content}}</p>
+        <div class="smaller-text d-flex flex-wrap">
+            <p class="post-user">{{post.user.username}}</p>
+            <button id={{post.id}} class="btn btn-primary margin-left-15 like-post">Like</button>
+            <p class="post-likes margin-left-15">{{post.likes.id}}</p>
+        </div>
+    </div>
+    <hr>
+    {% endfor %}
+</div>
+
+
+{% endblock %}
