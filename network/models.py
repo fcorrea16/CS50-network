@@ -28,7 +28,7 @@ class Post(models.Model):
         "User", on_delete=models.CASCADE, related_name="posted_by")
     post_date = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=False, max_length=280)
-    likes = models.ManyToManyField(User, related_name="likes")
+    likes = models.ManyToManyField(User, related_name="likes", default=0)
 
     def serialize(self):
         return {
@@ -39,6 +39,10 @@ class Post(models.Model):
 
     def __str__(self):
         return f"Post # {self.id} by {self.posted_by.username} on {self.post_date}"
+
+    @property
+    def num_likes(self):
+        return self.liked.all().count()
 
 
 class Followers(models.Model):

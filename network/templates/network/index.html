@@ -20,13 +20,12 @@
         <p class="post-content">{{post.content}}</p>
         <div class="smaller-text d-flex flex-wrap">
             <p class="post-user">{{post.posted_by}}</p>
-            <p>{{posts_liked_by_user.liked_post}}</p>
             {% if post.id in posts_liked%}
             <button id={{post.id}} class="btn margin-left-15 like-post btn-secondary">Like</button>
             {% else %}
             <button id={{post.id}} class="btn margin-left-15 like-post btn-primary">Like</button>
             {%endif%}
-            <p class="post-likes margin-left-15">{{post.likes.id}}</p>
+            <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
         </div>
     </div>
     <hr>

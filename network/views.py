@@ -9,21 +9,19 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 
+
 from .models import User, Post, Like
 
 
 def index(request):
     posts = Post.objects.all().order_by('-id')
     posts_liked_by_user = Like.objects.filter(liked_by=request.user)
-    all_likes = Like.objects.all()
-    print(all_likes)
     posts_liked = []
     for post in posts_liked_by_user:
         test = post.liked_post.id
         posts_liked.append(test)
     return render(request, "network/index.html", {
-        "posts": posts, "posts_liked": posts_liked, "all_likes": all_likes
-    })
+        "posts": posts, "posts_liked": posts_liked})
 
 
 # add new post
@@ -72,26 +70,32 @@ def post(request, post_id):
 @csrf_exempt
 def editlike(request):
     data = json.loads(request.body)
+    user = request.user
+    post_id = data.get("liked_post")
     like_exists = Like.objects.filter(
-        liked_by=request.user, liked_post=data.get("liked_post")).exists()
+        liked_by=user, liked_post=post_id).exists()
+    post = Post.objects.get(id=post_id)
+    print(post)
     if like_exists == True:
-        existing_like = Like.objects.filter(
-            liked_by=request.user, liked_post=data.get("liked_post"))
+        existing_like = Like.objects.get(
+            liked_by=user, liked_post=post_id)
         existing_like.delete()
+        post.likes.remove(user)
+        post.save()
         return HttpResponseRedirect(reverse("index"))
     else:
-        post_id = data.get("liked_post")
-        liked_post = Post.objects.get(pk=post_id)
         new_like = Like.objects.create(
-            liked_by=request.user, liked_post=liked_post)
+            liked_by=user, liked_post=post)
         new_like.save()
+        post.likes.add(user)
+        post.save()
         return JsonResponse(new_like.serialize())
 
 
 def likeinfo(request, like_id):
     # Query for requested like
     try:
-        like = Like.objects.get(liked_by=request.user, pk=like_id)
+        like = Like.objects.get(pk=like_id)
     except Like.DoesNotExist:
         return JsonResponse({"error": "like not found."}, status=404)
 
@@ -99,10 +103,10 @@ def likeinfo(request, like_id):
     if request.method == "GET":
         return JsonResponse(like.serialize())
 
-    # create new like
+    # anything that isnt get
     else:
         return JsonResponse({
-            "error": "GET or PUT request required."
+            "error": "GET request required."
         }, status=400)
 
 

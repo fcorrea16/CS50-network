@@ -4,18 +4,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     likeButtons.forEach(btn => {
         btn.addEventListener('click', event => {
+            element = event.target
             if (event.target.classList.contains('btn-primary')) {
-                event.target.classList.remove('btn-primary')
-                event.target.classList.add('btn-secondary')
+                element.classList.remove('btn-primary')
+                element.classList.add('btn-secondary')
+                likes = element.nextElementSibling.innerHTML
+                element.nextElementSibling.innerHTML = likes + 1
+                console.log("hello1")
             } else {
-                event.target.classList.add('btn-primary')
-                event.target.classList.remove('btn-secondary')
+                element = event.target
+                element.classList.add('btn-primary')
+                element.classList.remove('btn-secondary')
+                likes = element.nextElementSibling.innerHTML
+                element.nextElementSibling.innerHTML = likes - 1
+                console.log("hello2")
             }
-            liked_post = event.target.id
             fetch('/editlike', {
                 method: 'POST',
                 body: JSON.stringify({
-                    liked_post: liked_post
+                    liked_post: element.id
                 })
             })
 
