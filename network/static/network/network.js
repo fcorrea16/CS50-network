@@ -4,21 +4,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     likeButtons.forEach(btn => {
         btn.addEventListener('click', event => {
-            console.log(event.target.id);
-            // add to database
-        })
+            console.log("clicked button")
+            console.log(event.target.id)
+            liked_post = event.target.id
+            fetch('/editlike', {
+                method: 'POST',
+                body: JSON.stringify({
+                    liked_post: liked_post
+                })
+            })
+
+        });
     })
 });
 
-function like(id) {
-    fetch('post/' + id)
-        .then(response => response.json())
-        .then(post => {
-            fetch('/post/' + post.id, {
-                method: 'PUT',
-                body: JSON.stringify({})
-            })
-            location.reload()
-                .then();
-        })
-}
+
+
+
+
