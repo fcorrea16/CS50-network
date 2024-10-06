@@ -28,6 +28,7 @@ class Post(models.Model):
         "User", on_delete=models.CASCADE, related_name="posted_by")
     post_date = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=False, max_length=280)
+    likes = models.ManyToManyField(User, related_name="likes")
 
     def serialize(self):
         return {

@@ -4,8 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     likeButtons.forEach(btn => {
         btn.addEventListener('click', event => {
-            console.log("clicked button")
-            console.log(event.target.id)
+            if (event.target.classList.contains('btn-primary')) {
+                event.target.classList.remove('btn-primary')
+                event.target.classList.add('btn-secondary')
+            } else {
+                event.target.classList.add('btn-primary')
+                event.target.classList.remove('btn-secondary')
+            }
             liked_post = event.target.id
             fetch('/editlike', {
                 method: 'POST',

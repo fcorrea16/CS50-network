@@ -14,8 +14,15 @@ from .models import User, Post, Like
 
 def index(request):
     posts = Post.objects.all().order_by('-id')
+    posts_liked_by_user = Like.objects.filter(liked_by=request.user)
+    all_likes = Like.objects.all()
+    print(all_likes)
+    posts_liked = []
+    for post in posts_liked_by_user:
+        test = post.liked_post.id
+        posts_liked.append(test)
     return render(request, "network/index.html", {
-        "posts": posts
+        "posts": posts, "posts_liked": posts_liked, "all_likes": all_likes
     })
 
 
@@ -65,23 +72,16 @@ def post(request, post_id):
 @csrf_exempt
 def editlike(request):
     data = json.loads(request.body)
-    print(data)
-    print(Like.objects.filter(
-        liked_by=request.user, liked_post=data.get("liked_post")).exists())
     like_exists = Like.objects.filter(
         liked_by=request.user, liked_post=data.get("liked_post")).exists()
     if like_exists == True:
         existing_like = Like.objects.filter(
             liked_by=request.user, liked_post=data.get("liked_post"))
         existing_like.delete()
-        print("went to try")
         return HttpResponseRedirect(reverse("index"))
     else:
-        print("went to else")
         post_id = data.get("liked_post")
         liked_post = Post.objects.get(pk=post_id)
-        print(liked_post)
-        print(liked_post.id)
         new_like = Like.objects.create(
             liked_by=request.user, liked_post=liked_post)
         new_like.save()
