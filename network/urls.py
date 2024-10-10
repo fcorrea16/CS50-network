@@ -7,6 +7,8 @@ urlpatterns = [
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
+    path("following", views.following, name="following"),
+    path("profile/<str:username>", views.profile, name="profile"),
 
 
     # API routes

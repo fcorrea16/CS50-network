@@ -1,0 +1,33 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<h2>{{username}}</h2>
+
+{% if request_user == username %}
+<div class="follow">
+    <p>this is your profile - create follow and unfollow button</p>
+</div>
+
+{% endif %}
+<div class="follow-info">
+    <p>Followers NUM</p>
+    <p>Following NUM</p>
+</div>
+
+{%for post in posts_by_user%}
+<div id="post-{{ post.id }}" class="post">
+    <div class="posted-by d-flex flex-wrap">
+        <p class="edit-post margin-left-15">edit</p>
+        <p class="post-date margin-left-15">{{post.post_date}}</p>
+    </div>
+    <div class="post-content ">
+        <p class="post-content-{{post.id}}">{{post.content}}</p>
+        <form action="post/{{post.id}}" method="put" class="hide form-content-{{post.id}}">
+            {% csrf_token %}
+            <textarea name="edit-content" class="form-control edit-content-{{post.id}}" rows="3"></textarea>
+            <input type="submit" class="btn btn-primary submit-edit-post" value="Update">
+        </form>
+    </div>
+
+    {%endfor %}
+    {% endblock %}

@@ -8,29 +8,45 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
-
+from django.shortcuts import get_object_or_404
 
 from .models import User, Post, Like
 
 
 def index(request):
     posts = Post.objects.all().order_by('-id')
-    posts_liked_by_user = Like.objects.filter(liked_by=request.user)
     posts_liked = []
-    for post in posts_liked_by_user:
-        test = post.liked_post.id
-        posts_liked.append(test)
+    if request.user.is_authenticated:
+        posts_liked_by_user = Like.objects.filter(liked_by=request.user)
+        for post in posts_liked_by_user:
+            test = post.liked_post.id
+            posts_liked.append(test)
+    else:
+        pass
     return render(request, "network/index.html", {
         "posts": posts, "posts_liked": posts_liked})
 
 
+def following(request):
+    return render(request, "network/following.html")
+
+
+def profile(request, username):
+    username = get_object_or_404(User, username=username)
+    print(username)
+    request_user = request.user
+    print(request.user)
+    posts_by_user = Post.objects.filter(posted_by=username).order_by('-id')
+    return render(request, "network/profile.html", {
+        "request_user": request_user, "username": username, "posts_by_user": posts_by_user})
+
 # add new post
+
+
 def add(request):
     if request.method == "POST":
         current_user = request.user
         post_content = request.POST.get('new-content')
-        print("post content =")
-        print(post_content)
         if post_content == "":
             return JsonResponse({"error": "At least one character required."
                                  }, status=400)
@@ -46,19 +62,25 @@ def add(request):
 def post(request, post_id):
 
     # Query for requested post
-    try:
-        post = Post.objects.get(posted_by=request.user, pk=post_id)
-    except post.DoesNotExist:
-        return JsonResponse({"error": "post not found."}, status=404)
+    post = get_object_or_404(Post, pk=post_id)
 
     # Return post contents
     if request.method == "GET":
         return JsonResponse(post.serialize())
 
-    # Update post
+    # Update post - PROBLEM HERE
     elif request.method == "PUT":
+        print("put path")
         data = json.loads(request.body)
+        print("post method")
+        post = Post.objects.get(posted_by=request.user, pk=post_id)
+        print(post)
         print(data)
+        # this isnt working
+        # new_content = data.get("content")
+        # print(new_content)
+        # post.content = new_content
+        # post.save()
         return HttpResponse(status=204)
 
     else:

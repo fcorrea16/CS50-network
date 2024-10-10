@@ -45,7 +45,10 @@ class Post(models.Model):
         return self.liked.all().count()
 
 
-class Followers(models.Model):
-    pass
+class Follower(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user")
+    following = models.ManyToManyField(
+        User, related_name="following", default=0, blank=True)
 
-# represent details about posts, likes, and followers.
+    # represent details about posts, likes, and followers
