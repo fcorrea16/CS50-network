@@ -49,6 +49,7 @@ class Follower(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user")
     following = models.ManyToManyField(
-        User, related_name="following", default=0, blank=True)
+        User, related_name="following", default=[0], blank=True)
 
-    # represent details about posts, likes, and followers
+    def __str__(self):
+        return f"{self.user} is following"

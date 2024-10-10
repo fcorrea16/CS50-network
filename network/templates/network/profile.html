@@ -6,6 +6,8 @@
 {% if request_user == username %}
 <div class="follow">
     <p>this is your profile - create follow and unfollow button</p>
+    <button class="follow btn btn-primary">Follow</button>
+    <button class="unfollow btn btn-outline-primary">Unfollow</button>
 </div>
 
 {% endif %}
@@ -28,6 +30,8 @@
             <input type="submit" class="btn btn-primary submit-edit-post" value="Update">
         </form>
     </div>
+    <hr>
+</div>
 
-    {%endfor %}
-    {% endblock %}
+{%endfor %}
+{% endblock %}
