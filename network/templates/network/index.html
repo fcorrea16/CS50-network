@@ -22,19 +22,19 @@
     {% for post in posts%}
     <div id="post-{{ post.id }}" class="post">
         <div class="posted-by d-flex flex-wrap">
-            <p class="post-user"><strong>{{post.posted_by}}</strong></p>
+            <p class="post-user"><strong><a href="profile/{{post.posted_by}}">{{post.posted_by}}</a></strong></p>
             {%if post.posted_by == user %}
-            <p class="edit-post margin-left-15">edit</p>
+            <button class="btn btn-outline-primary edit-post margin-left-15">edit</button>
             {%endif%}
             <p class="post-date margin-left-15">{{post.post_date}}</p>
         </div>
         <div class="post-content ">
             <p class="post-content-{{post.id}}">{{post.content}}</p>
-            <form action="post/{{post.id}}" method="put" class="hide form-content-{{post.id}}">
-                {% csrf_token %}
+            <div class="hide form-content-{{post.id}}">
                 <textarea name="edit-content" class="form-control edit-content-{{post.id}}" rows="3"></textarea>
-                <input type="submit" class="btn btn-primary submit-edit-post" value="Update">
-            </form>
+                <button class="btn btn-primary submit-edit-post">Update</button>
+                </form>
+            </div>
         </div>
 
         <div class="smaller-text d-flex flex-wrap">

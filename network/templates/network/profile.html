@@ -2,26 +2,25 @@
 
 {% block body %}
 <h2>{{username}}</h2>
-
+<div class="follow-info d-flex flex-wrap">
+    <p>Followers NUM</p>
+    <p class="margin-left-15">Following NUM</p>
+</div>
 {% if request_user == username %}
 <div class="follow">
-    <p>this is your profile - create follow and unfollow button</p>
+    <p>this is your profile</p>
     <button class="follow btn btn-primary">Follow</button>
     <button class="unfollow btn btn-outline-primary">Unfollow</button>
 </div>
-
-{% endif %}
-<div class="follow-info">
-    <p>Followers NUM</p>
-    <p>Following NUM</p>
+{% else %}
+<div class="follow">
+    <button class="follow btn btn-primary">Follow</button>
 </div>
+{% endif %}
 
 {%for post in posts_by_user%}
 <div id="post-{{ post.id }}" class="post">
-    <div class="posted-by d-flex flex-wrap">
-        <p class="edit-post margin-left-15">edit</p>
-        <p class="post-date margin-left-15">{{post.post_date}}</p>
-    </div>
+
     <div class="post-content ">
         <p class="post-content-{{post.id}}">{{post.content}}</p>
         <form action="post/{{post.id}}" method="put" class="hide form-content-{{post.id}}">
@@ -29,6 +28,10 @@
             <textarea name="edit-content" class="form-control edit-content-{{post.id}}" rows="3"></textarea>
             <input type="submit" class="btn btn-primary submit-edit-post" value="Update">
         </form>
+    </div>
+    <div class="posted-by d-flex flex-wrap">
+        <p class="edit-post ">edit</p>
+        <p class="post-date margin-left-15">{{post.post_date}}</p>
     </div>
     <hr>
 </div>

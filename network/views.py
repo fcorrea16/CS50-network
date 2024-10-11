@@ -37,6 +37,8 @@ def profile(request, username):
     request_user = request.user
     print(request.user)
     posts_by_user = Post.objects.filter(posted_by=username).order_by('-id')
+    following_num = 0
+    followers_num = 0
     return render(request, "network/profile.html", {
         "request_user": request_user, "username": username, "posts_by_user": posts_by_user})
 
@@ -59,6 +61,7 @@ def add(request):
 
 # API routes
 
+@csrf_exempt
 def post(request, post_id):
 
     # Query for requested post
@@ -70,17 +73,10 @@ def post(request, post_id):
 
     # Update post - PROBLEM HERE
     elif request.method == "PUT":
-        print("put path")
         data = json.loads(request.body)
-        print("post method")
         post = Post.objects.get(posted_by=request.user, pk=post_id)
-        print(post)
-        print(data)
-        # this isnt working
-        # new_content = data.get("content")
-        # print(new_content)
-        # post.content = new_content
-        # post.save()
+        post.content = data["content"]
+        post.save()
         return HttpResponse(status=204)
 
     else:

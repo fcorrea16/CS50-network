@@ -30,16 +30,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // new post button disabled and character count
-    newPostButton = document.querySelector('#submit-post').disabled = true;
-    newContent = document.querySelector('#new-content')
+    const newPostButton = document.querySelector('#submit-post');
+    if (newPostButton) {
+        document.querySelector('#submit-post').disabled = true;
 
-    newContent.onkeyup = function () {
-        if (this.value.length > 0) {
-            newPostButton = document.querySelector('#submit-post').disabled = false;
-            document.querySelector('#form-message').innerHTML = "Characters left " + (280 - this.value.length)
-        }
+        newContent = document.querySelector('#new-content')
 
-    };
+        newContent.onkeypress = function () {
+            if (this.value.length > 0) {
+                newPostButton.disabled = false;
+                document.querySelector('#form-message').innerHTML = "Characters left " + (280 - this.value.length)
+            }
+        };
+    }
+
+
 
 
     // edit post
@@ -54,19 +59,18 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('.post-content-' + post_id).classList.add('hide')
             document.querySelector('.form-content-' + post_id).classList.remove('hide')
             document.querySelector('.edit-content-' + post_id).innerHTML = document.querySelector('.post-content-' + post_id).innerHTML
-            submit_button = document.querySelector('.edit-content-' + post_id).nextSibling
+            submit_button = document.querySelector('.edit-content-' + post_id).nextSibling.nextSibling
+            console.log(submit_button)
             submit_button.addEventListener('click', event => {
                 inputContent = document.querySelector('.edit-content-' + post_id).value
-                console.log(inputContent)
-                event.preventDefault()
                 fetch('post/' + post_id)
                     .then(response => response.json())
                     .then(post => {
-                        fetch('/post/' + post_id, {
+                        console.log(post)
+                        fetch('/post/' + post.id, {
                             method: 'PUT',
                             body: JSON.stringify({ content: inputContent })
                         })
-
 
 
                     })
