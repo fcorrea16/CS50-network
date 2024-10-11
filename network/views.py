@@ -9,8 +9,9 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 
-from .models import User, Post, Like
+from .models import User, Post, Like, Follower
 
 
 def index(request):
@@ -33,14 +34,30 @@ def following(request):
 
 def profile(request, username):
     username = get_object_or_404(User, username=username)
-    print(username)
     request_user = request.user
-    print(request.user)
     posts_by_user = Post.objects.filter(posted_by=username).order_by('-id')
-    following_num = 0
-    followers_num = 0
+    all_following = Follower.objects.filter(user_id=username).all()
+    following_num = all_following.count()
+    all_followers = Follower.objects.filter(follower=username).all()
+    followers_num = all_followers.count()
+    if request_user == username:
+        request_user_follows = False
+        print(request_user_follows)
+    else:
+        request_user_follows = Follower.objects.filter(
+            user_id=request.user, follower=username).exists()
+        print(request_user_follows)
+    posts_liked = []
+    if request.user.is_authenticated:
+        posts_liked_by_user = Like.objects.filter(liked_by=request.user)
+        for post in posts_liked_by_user:
+            test = post.liked_post.id
+            posts_liked.append(test)
+    else:
+        pass
     return render(request, "network/profile.html", {
-        "request_user": request_user, "username": username, "posts_by_user": posts_by_user})
+        "request_user": request_user, "username": username, "posts_by_user": posts_by_user, "following_num": following_num,
+        "followers_num": followers_num, "posts_liked": posts_liked, "request_user_follows": request_user_follows})
 
 # add new post
 
@@ -71,12 +88,36 @@ def post(request, post_id):
     if request.method == "GET":
         return JsonResponse(post.serialize())
 
-    # Update post - PROBLEM HERE
+    # Update post
     elif request.method == "PUT":
         data = json.loads(request.body)
         post = Post.objects.get(posted_by=request.user, pk=post_id)
         post.content = data["content"]
         post.save()
+        return HttpResponse(status=204)
+
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
+
+@csrf_exempt
+def follower(request, username):
+
+    # Query for requested post
+    user = get_object_or_404(User, username=username)
+
+    # Return post contents
+    if request.method == "GET":
+        return JsonResponse(post.serialize())
+
+    # Update post
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        # post = Post.objects.get(posted_by=request.user, pk=post_id)
+        # post.content = data["content"]
+        # post.save()
         return HttpResponse(status=204)
 
     else:
@@ -93,7 +134,6 @@ def editlike(request):
     like_exists = Like.objects.filter(
         liked_by=user, liked_post=post_id).exists()
     post = Post.objects.get(id=post_id)
-    print(post)
     if like_exists == True:
         existing_like = Like.objects.get(
             liked_by=user, liked_post=post_id)

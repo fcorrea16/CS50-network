@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+
+
+
     // new post button disabled and character count
     const newPostButton = document.querySelector('#submit-post');
     if (newPostButton) {
@@ -55,28 +58,49 @@ document.addEventListener('DOMContentLoaded', function () {
             post_id_string = editButton.parentNode.parentNode.id
             post_id_split = post_id_string.split("-", 2)
             post_id = post_id_split[1]
-            post_content = editButton.parentNode.nextElementSibling
-            document.querySelector('.post-content-' + post_id).classList.add('hide')
-            document.querySelector('.form-content-' + post_id).classList.remove('hide')
-            document.querySelector('.edit-content-' + post_id).innerHTML = document.querySelector('.post-content-' + post_id).innerHTML
-            submit_button = document.querySelector('.edit-content-' + post_id).nextSibling.nextSibling
-            console.log(submit_button)
-            submit_button.addEventListener('click', event => {
-                inputContent = document.querySelector('.edit-content-' + post_id).value
-                fetch('post/' + post_id)
-                    .then(response => response.json())
-                    .then(post => {
-                        console.log(post)
-                        fetch('/post/' + post.id, {
-                            method: 'PUT',
-                            body: JSON.stringify({ content: inputContent })
+            if (document.querySelector('.form-content-' + post_id).classList.contains('hide')) {
+                post_content = editButton.parentNode.nextElementSibling
+                document.querySelector('.post-content-' + post_id).classList.add('hide')
+                document.querySelector('.form-content-' + post_id).classList.remove('hide')
+                document.querySelector('.edit-content-' + post_id).innerHTML = document.querySelector('.post-content-' + post_id).innerHTML
+                submit_button = document.querySelector('.edit-content-' + post_id).nextSibling.nextSibling
+                console.log(submit_button)
+                submit_button.addEventListener('click', event => {
+                    inputContent = document.querySelector('.edit-content-' + post_id).value
+                    document.querySelector('.post-content-' + post_id).innerHTML = inputContent
+                    fetch('../post/' + post_id)
+                        .then(response => response.json())
+                        .then(post => {
+                            console.log(post)
+                            fetch('/post/' + post.id, {
+                                method: 'PUT',
+                                body: JSON.stringify({ content: inputContent })
+                            })
+                            document.querySelector('.form-content-' + post_id).classList.add('hide')
+                            document.querySelector('.post-content-' + post_id).classList.remove('hide')
                         })
 
-
-                    })
-
-            })
+                })
+            } else {
+                document.querySelector('.form-content-' + post_id).classList.add('hide')
+                document.querySelector('.post-content-' + post_id).classList.remove('hide')
+            }
 
         })
     })
+    // follow and unfollow function
+    followButton = document.querySelector('#follow-button')
+    followButton.addEventListener('click', event => {
+        element = event.target
+        if (element.classList.contains('unfollow')) {
+            element.classList.remove('unfollow')
+            element.innerHTML = "Follow"
+            // save to database
+        } else {
+            element.classList.add('unfollow')
+            element.innerHTML = "Unfollow"
+            // save to database
+        }
+    })
 })
+

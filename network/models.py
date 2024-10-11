@@ -46,10 +46,17 @@ class Post(models.Model):
 
 
 class Follower(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="user")
-    following = models.ManyToManyField(
-        User, related_name="following", default=[0], blank=True)
+    user_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_id")
+    follower = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="follower")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "follower": self.follower,
+        }
 
     def __str__(self):
-        return f"{self.user} is following"
+        return f"{self.user_id.username} is following {self.follower}"

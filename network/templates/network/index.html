@@ -22,7 +22,7 @@
     {% for post in posts%}
     <div id="post-{{ post.id }}" class="post">
         <div class="posted-by d-flex flex-wrap">
-            <p class="post-user"><strong><a href="profile/{{post.posted_by}}">{{post.posted_by}}</a></strong></p>
+            <p><a href="profile/{{post.posted_by}}"><strong>{{post.posted_by}}</strong></a></p>
             {%if post.posted_by == user %}
             <button class="btn btn-outline-primary edit-post margin-left-15">edit</button>
             {%endif%}
