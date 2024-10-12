@@ -1,13 +1,40 @@
+/* utilities */
+
 .margin-left-15 {
     margin-left: 15px;
 }
+
+.margin-left-10 {
+    margin-left: 10px;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-top-50 {
+    margin-top: 50px;
+}
+
+.hide {
+    display: none !important;
+}
+
+
+/* like */
+.like-svg {
+    width: 18px;
+}
+
+.count-like {
+    margin-bottom: 0;
+}
+
+
+/* form */
 
 #form-message {
     float: right;
     margin-top: 15px;
     font-size: 10px;
-}
-
-.hide {
-    display: none !important;
 }
