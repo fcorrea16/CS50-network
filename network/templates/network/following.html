@@ -2,4 +2,42 @@
 
 {% block body %}
 <h2>Following</h2>
+
+{% if not all_following %}
+<p>You aren't following anyone</p>
+{% else %}
+{% for query in following_posts%}
+{% for post in query %}
+<div id="post-{{ post.id }}" class="post">
+    <div class="posted-by d-flex flex-wrap">
+        <p><a href="profile/{{post.posted_by}}"><strong>{{post.posted_by}}</strong></a></p>
+        {%if post.posted_by == user %}
+        <button class="btn btn-outline-primary edit-post margin-left-15">edit</button>
+        {%endif%}
+        <p class="post-date margin-left-15">{{post.post_date}}</p>
+    </div>
+    <div class="post-content ">
+        <p class="post-content-{{post.id}}">{{post.content}}</p>
+        <div class="hide form-content-{{post.id}}">
+            <textarea name="edit-content" class="form-control edit-content-{{post.id}}" rows="3"></textarea>
+            <button class="btn btn-primary submit-edit-post">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="smaller-text d-flex flex-wrap">
+        {% if post.id in posts_liked%}
+        <button id={{post.id}} class="btn margin-left-15 like-post btn-secondary">Like</button>
+        {% else %}
+        <button id={{post.id}} class="btn margin-left-15 like-post btn-primary">Like</button>
+        {%endif%}
+        <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
+    </div>
+</div>
+<hr>
+{% endfor %}
+{% endfor %}
+{% endif%}
+
+
 {% endblock %}

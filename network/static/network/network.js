@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     fetch('../post/' + post_id)
                         .then(response => response.json())
                         .then(post => {
-                            console.log(post)
                             fetch('/post/' + post.id, {
                                 method: 'PUT',
                                 body: JSON.stringify({ content: inputContent })
@@ -88,19 +87,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
         })
     })
+
+
     // follow and unfollow function
-    followButton = document.querySelector('#follow-button')
-    followButton.addEventListener('click', event => {
-        element = event.target
-        if (element.classList.contains('unfollow')) {
-            element.classList.remove('unfollow')
-            element.innerHTML = "Follow"
-            // save to database
-        } else {
-            element.classList.add('unfollow')
-            element.innerHTML = "Unfollow"
-            // save to database
-        }
-    })
+    // FIX HERE
+    const request_user_follows = JSON.parse(document.getElementById('request_user_follows_id').textContent);
+    var unfollowButton = document.querySelector('.unfollow')
+
+    if (typeof (unfollowButton) != 'undefined' && unfollowButton != null) {
+        unfollowButton.addEventListener('click', event => {
+            element = event.target
+            fetch('../follower/' + request_user_follows)
+                .then(response => response.json())
+                .then(post => {
+                    console.log(post)
+                    console.log("hi")
+                    fetch('/follower/' + request_user_follows, {
+                        method: 'DELETE',
+                        body: JSON.stringify({ follower_id: request_user_follows })
+                    })
+                    element.classList.remove('unfollow', 'btn-outline-primary')
+                    element.classList.add('btn-primary')
+                    element.innerHTML = "Follow"
+                    this.location.reload()
+                })
+        })
+    }
+
 })
+
 

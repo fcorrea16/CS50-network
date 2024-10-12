@@ -1,21 +1,28 @@
 {% extends "network/layout.html" %}
 
+
 {% block body %}
+{{ request_user_follows_id|json_script:"request_user_follows_id" }}
 <h2>{% if request_user == username %}hello, {% endif %}{{username}}</h2>
 <div class="follow-info d-flex flex-wrap">
     <p>Followers: {{followers_num}}</p>
     <p class="margin-left-15">Following: {{following_num}}</p>
 </div>
 
-{% if not request_user == username %}
 <div class="follow">
     {% if request_user_follows == True %}
     <button id="follow-button" class="unfollow btn btn-outline-primary">Unfollow</button>
-    {% else %}
-    <button id="follow-button" class="btn btn-primary">Follow</button>
+    {% elif request_user == username %}
+    {% else%}
+    <form action="{% url 'follow' %}" method="post" class="add-follower">
+        {% csrf_token %}
+        <input id="follow-button" type="submit" class="btn btn-primary" value="Follow">
+        <input type="hidden" name="profile_user" value="{{username}}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <p id="form-message" class="small-p"></p>
+    </form>
     {% endif%}
 </div>
-{% endif %}
 
 {%for post in posts_by_user%}
 <hr>

@@ -22,14 +22,34 @@ def index(request):
         for post in posts_liked_by_user:
             test = post.liked_post.id
             posts_liked.append(test)
-    else:
-        pass
     return render(request, "network/index.html", {
         "posts": posts, "posts_liked": posts_liked})
 
 
 def following(request):
-    return render(request, "network/following.html")
+    ruser = request.user.id
+    all_following = Follower.objects.filter(user_id=ruser).all()
+    all_posts = Post.objects.all().order_by('-id')
+    following_post_ids = []
+    for post in all_posts:
+        for following in all_following:
+            if following.follower == post.posted_by:
+                following_post_ids.append(post.id)
+            else:
+                pass
+    following_posts = []
+    for post in following_post_ids:
+        following_posts.append(Post.objects.filter(pk=post))
+    print(following_posts)
+
+    posts_liked = []
+    posts_liked_by_user = Like.objects.filter(liked_by=request.user)
+    for post in posts_liked_by_user:
+        test = post.liked_post.id
+        posts_liked.append(test)
+    return render(request, "network/following.html",
+                  {"all_following": all_following,
+                   "following_posts": following_posts, "all_posts": all_posts, "posts_liked": posts_liked})
 
 
 def profile(request, username):
@@ -40,28 +60,32 @@ def profile(request, username):
     following_num = all_following.count()
     all_followers = Follower.objects.filter(follower=username).all()
     followers_num = all_followers.count()
-    if request_user == username:
-        request_user_follows = False
-        print(request_user_follows)
-    else:
-        request_user_follows = Follower.objects.filter(
-            user_id=request.user, follower=username).exists()
-        print(request_user_follows)
+    request_user_follows = False
+    request_user_follows_id = 0
     posts_liked = []
     if request.user.is_authenticated:
         posts_liked_by_user = Like.objects.filter(liked_by=request.user)
         for post in posts_liked_by_user:
             test = post.liked_post.id
             posts_liked.append(test)
+        if Follower.objects.filter(user_id=request.user, follower=username).exists():
+            request_user_follows = Follower.objects.filter(
+                user_id=request.user, follower=username).exists()
+            request_user_follows_id = Follower.objects.get(
+                user_id=request.user, follower=username).id
+        else:
+            request_user_follows = False
+            request_user_follows_id = 0
     else:
         pass
     return render(request, "network/profile.html", {
         "request_user": request_user, "username": username, "posts_by_user": posts_by_user, "following_num": following_num,
-        "followers_num": followers_num, "posts_liked": posts_liked, "request_user_follows": request_user_follows})
+        "followers_num": followers_num, "posts_liked": posts_liked, "request_user_follows": request_user_follows, "request_user_follows_id": request_user_follows_id})
+
+
+# API routes
 
 # add new post
-
-
 def add(request):
     if request.method == "POST":
         current_user = request.user
@@ -73,10 +97,8 @@ def add(request):
             posted_by=current_user, content=post_content)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "network/add.html")
+        return render(request, "network/index.html")
 
-
-# API routes
 
 @csrf_exempt
 def post(request, post_id):
@@ -102,27 +124,47 @@ def post(request, post_id):
         }, status=400)
 
 
+# add new follower
+def follow(request):
+    if request.method == "POST":
+        ruser = request.user
+        follower = User.objects.get(username=ruser)
+        follow_name = request.POST.get("profile_user")
+        follow = User.objects.get(username=follow_name)
+        new_follow = Follower.objects.create(
+            user_id=follower, follower=follow)
+        new_follow.save()
+        next = request.POST.get('next', '/')
+        return HttpResponseRedirect(next)
+    else:
+        return render(request, "network/index.html")
+
+
 @csrf_exempt
-def follower(request, username):
+def follower(request, follower_id):
 
     # Query for requested post
-    user = get_object_or_404(User, username=username)
+    follower_id = get_object_or_404(Follower, pk=follower_id)
+    print(follower_id)
 
     # Return post contents
     if request.method == "GET":
-        return JsonResponse(post.serialize())
+        return JsonResponse(follower_id.serialize())
 
     # Update post
     elif request.method == "PUT":
-        data = json.loads(request.body)
-        # post = Post.objects.get(posted_by=request.user, pk=post_id)
-        # post.content = data["content"]
-        # post.save()
+        # print("hi put")
+        # data = json.loads(request.body)
         return HttpResponse(status=204)
 
+    elif request.method == "DELETE":
+        data = json.loads(request.body)
+        follower_id = data.get("follower_id")
+        Follower.objects.get(id=follower_id).delete()
+        return HttpResponse(status=204)
     else:
         return JsonResponse({
-            "error": "GET or PUT request required."
+            "error": "GET or PUT or delete request required."
         }, status=400)
 
 

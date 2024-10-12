@@ -54,9 +54,9 @@ class Follower(models.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.user_id,
-            "follower": self.follower,
+            "user_id": self.user_id.username,
+            "follower": self.follower.username,
         }
 
     def __str__(self):
-        return f"{self.user_id.username} is following {self.follower}"
+        return f"#{self.id}: {self.user_id.username} is following {self.follower}"
