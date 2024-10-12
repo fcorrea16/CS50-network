@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from django.core.paginator import Paginator
 
 from .models import User, Post, Like, Follower
 
@@ -22,8 +23,15 @@ def index(request):
         for post in posts_liked_by_user:
             test = post.liked_post.id
             posts_liked.append(test)
+
+    paginator = Paginator(posts, 10)  # Show 10 posts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    nums = "a" * page_obj.paginator.num_pages
+
     return render(request, "network/index.html", {
-        "posts": posts, "posts_liked": posts_liked})
+        "posts": posts, "posts_liked": posts_liked,
+        'page_obj': page_obj, "nums": nums})
 
 
 def following(request):
@@ -47,9 +55,16 @@ def following(request):
     for post in posts_liked_by_user:
         test = post.liked_post.id
         posts_liked.append(test)
+
+    paginator = Paginator(following_posts, 10)  # Show 10 posts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    nums = "a" * page_obj.paginator.num_pages
+
     return render(request, "network/following.html",
                   {"all_following": all_following,
-                   "following_posts": following_posts, "all_posts": all_posts, "posts_liked": posts_liked})
+                   "following_posts": following_posts, "all_posts": all_posts,
+                   "posts_liked": posts_liked, 'page_obj': page_obj, "nums": nums})
 
 
 def profile(request, username):
@@ -78,9 +93,17 @@ def profile(request, username):
             request_user_follows_id = 0
     else:
         pass
+
+    paginator = Paginator(posts_by_user, 10)  # Show 10 posts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    nums = "a" * page_obj.paginator.num_pages
+
     return render(request, "network/profile.html", {
-        "request_user": request_user, "username": username, "posts_by_user": posts_by_user, "following_num": following_num,
-        "followers_num": followers_num, "posts_liked": posts_liked, "request_user_follows": request_user_follows, "request_user_follows_id": request_user_follows_id})
+        "request_user": request_user, "username": username, "posts_by_user": posts_by_user,
+        "following_num": following_num, "followers_num": followers_num, "posts_liked": posts_liked,
+        "request_user_follows": request_user_follows, "request_user_follows_id": request_user_follows_id,
+        'page_obj': page_obj, "nums": nums})
 
 
 # API routes
