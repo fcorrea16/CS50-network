@@ -16,6 +16,10 @@
     margin-top: 50px;
 }
 
+.margin-bottom-15 {
+    margin-bottom: 15px;
+}
+
 .hide {
     display: none !important;
 }
@@ -24,15 +28,21 @@ h2 {
     color: #3B2C6D;
 }
 
-/* buttons */
-.edit-post {
-    display: flex;
-    justify-content: flex-end;
+/* posted by */
+.edit-button-box {
+    text-align: right;
+    align-content: right;
 }
 
 /* like */
 .like-svg {
     width: 18px;
+
+}
+
+.cursor-pointer {
+    cursor: pointer;
+
 }
 
 .count-like {

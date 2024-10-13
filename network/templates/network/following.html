@@ -1,44 +1,49 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-<h2>Following</h2>
+{% load static %}
+<div class="col-sm-12 margin-top-50">
+    <h2>Following</h2>
+</div>
+<div class="post-section col-sm-12 margin-top-50">
+    {% if not all_following %}
+    <p>You aren't following anyone</p>
+    {% else %}
+    {% for query in page_obj%}
+    {% for post in query %}
+    <div id="post-{{ post.id }}" class="post">
+        <div class="posted-by d-flex flex-wrap">
+            <p><a href="profile/{{post.posted_by}}"><strong>{{post.posted_by}}</strong></a></p>
+            <p class="post-date margin-left-15">{{post.post_date|date:"F d" }}</p>
+        </div>
+        <div class="post-content ">
+            <p class="post-content-{{post.id}}">{{post.content}}</p>
+        </div>
 
-{% if not all_following %}
-<p>You aren't following anyone</p>
-{% else %}
-{% for query in page_obj%}
-{% for post in query %}
-<div id="post-{{ post.id }}" class="post">
-    <div class="posted-by d-flex flex-wrap">
-        <p><a href="profile/{{post.posted_by}}"><strong>{{post.posted_by}}</strong></a></p>
-        {%if post.posted_by == user %}
-        <button class="btn btn-outline-primary edit-post margin-left-15">edit</button>
-        {%endif%}
-        <p class="post-date margin-left-15">{{post.post_date}}</p>
-    </div>
-    <div class="post-content ">
-        <p class="post-content-{{post.id}}">{{post.content}}</p>
-        <div class="hide form-content-{{post.id}}">
-            <textarea name="edit-content" class="form-control edit-content-{{post.id}}" rows="3"></textarea>
-            <button class="btn btn-primary submit-edit-post">Update</button>
-            </form>
+        <div class="smaller-text d-flex flex-wrap">
+
+            {% if user.is_authenticated %}
+            {% if post.id in posts_liked%}
+            <img id={{post.id}} class="like-svg like-post" src="{% get_media_prefix %}{{'heart-solid.svg'}}">
+            <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
+            {% else %}
+            <img id={{post.id}} class="like-svg like-post like-outline"
+                src="{% get_media_prefix %}{{'heart-outline.svg'}}">
+            <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
+            {%endif%}
+            {% else %}
+            <img id={{post.id}} class="like-svg" src="{% get_media_prefix %}{{'heart-solid.svg'}}">
+            <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
+            {%endif%}
+
+
         </div>
     </div>
-
-    <div class="smaller-text d-flex flex-wrap">
-        {% if post.id in posts_liked%}
-        <button id={{post.id}} class="btn margin-left-15 like-post btn-secondary">Like</button>
-        {% else %}
-        <button id={{post.id}} class="btn margin-left-15 like-post btn-primary">Like</button>
-        {%endif%}
-        <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
-    </div>
+    <hr>
+    {% endfor %}
+    {% endfor %}
+    {% endif%}
 </div>
-<hr>
-{% endfor %}
-{% endfor %}
-{% endif%}
-
 
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">

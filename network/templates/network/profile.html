@@ -2,14 +2,17 @@
 
 
 {% block body %}
-{{ request_user_follows_id|json_script:"request_user_follows_id" }}
-<h2>{% if request_user == username %}hello, {% endif %}{{username}}</h2>
-<div class="follow-info d-flex flex-wrap">
-    <p>Followers: {{followers_num}}</p>
-    <p class="margin-left-15">Following: {{following_num}}</p>
+{% load static %}
+<div class="col-sm-12 margin-top-50">
+    {{ request_user_follows_id|json_script:"request_user_follows_id" }}
+    <h2>{% if request_user == username %}hello, {% endif %}{{username}}</h2>
+    <div class="follow-info d-flex flex-wrap">
+        <p><strong>{{followers_num}}</strong> Followers</p>
+        <p class="margin-left-15"><strong>{{following_num}}</strong> Following</p>
+    </div>
 </div>
 
-<div class="follow">
+<div class="col-sm-12 follow">
     {% if request_user_follows == True %}
     <button id="follow-button" class="unfollow btn btn-outline-primary">Unfollow</button>
     {% elif request_user == username %}
@@ -23,39 +26,50 @@
     </form>
     {% endif%}
 </div>
+<div class="post-section col-sm-12 margin-top-50">
+    <hr>
+    {% for post in page_obj%}
 
-{%for post in page_obj%}
-<hr>
-<div id="post-{{ post.id }}" class="post">
-    <div class="posted-by edit-post-button d-flex flex-wrap">
+    <div id="post-{{ post.id }}" class="post row">
+        <div class="posted-by col-sm-9 d-flex flex-wrap">
+            <p><a href="profile/{{post.posted_by}}"><strong>{{post.posted_by}}</strong></a></p>
+            <p class="post-date margin-left-15">{{post.post_date|date:"F d" }}</p>
+        </div>
         {%if post.posted_by == user %}
-        <button class="btn btn-outline-primary edit-post margin-left-15">edit</button>
+        <div class="posted-by edit-button-box col-sm-3">
+            <button class="btn btn-light  btn-sm edit-post margin-left-15">edit</button>
+        </div>
         {%endif%}
-
     </div>
-    <div class="post-content">
+    <div class="post-content ">
         <p class="post-content-{{post.id}}">{{post.content}}</p>
-        <div class="hide form-content-{{post.id}}">
+        <div class="hide margin-top-10 form-content-{{post.id}}">
             <textarea name="edit-content" class="form-control edit-content-{{post.id}}" rows="3"></textarea>
-            <button class="btn btn-primary submit-edit-post">Update</button>
+            <button class="btn btn-primary submit-edit-post btn-sm margin-top-10 margin-bottom-15">Update</button>
             </form>
         </div>
     </div>
 
     <div class="smaller-text d-flex flex-wrap">
+
         {% if user.is_authenticated %}
         {% if post.id in posts_liked%}
-        <button id={{post.id}} class="btn margin-left-15 like-post btn-secondary">Like</button>
-        {% else %}
-        <button id={{post.id}} class="btn margin-left-15 like-post btn-primary">Like</button>
-        {%endif%}
-        {%endif%}
+        <img id={{post.id}} class="like-svg like-post" src="{% get_media_prefix %}{{'heart-solid.svg'}}">
         <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
-        <p class="post-date margin-left-15">{{post.post_date}}</p>
-    </div>
+        {% else %}
+        <img id={{post.id}} class="like-svg like-post like-outline" src="{% get_media_prefix %}{{'heart-outline.svg'}}">
+        <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
+        {%endif%}
+        {% else %}
+        <img id={{post.id}} class="like-svg" src="{% get_media_prefix %}{{'heart-solid.svg'}}">
+        <p class="count-like margin-left-15">{{post.likes.all.count}}</p>
+        {%endif%}
 
+
+    </div>
+    <hr>
+    {% endfor %}
 </div>
-{%endfor %}
 
 
 <nav aria-label="Page navigation example">
