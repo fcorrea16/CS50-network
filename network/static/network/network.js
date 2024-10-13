@@ -5,16 +5,17 @@ document.addEventListener('DOMContentLoaded', function () {
     likeButtons.forEach(btn => {
         btn.addEventListener('click', event => {
             element = event.target
-            if (event.target.classList.contains('btn-primary')) {
-                element.classList.remove('btn-primary')
-                element.classList.add('btn-secondary')
+            if (event.target.classList.contains('like-outline')) {
+                element.src = "media/heart-solid.svg";
+                console.log(element.src)
+                element.classList.remove('like-outline')
                 likes = element.nextElementSibling.innerHTML
                 element.nextElementSibling.innerHTML = parseInt(likes) + 1
                 console.log("hello1")
             } else {
                 element = event.target
-                element.classList.add('btn-primary')
-                element.classList.remove('btn-secondary')
+                element.classList.add('like-outline')
+                element.src = "media/heart-outline.svg";
                 likes = element.nextElementSibling.innerHTML
                 element.nextElementSibling.innerHTML = parseInt(likes) - 1
                 console.log("hello2")
@@ -90,13 +91,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // follow and unfollow function
-    // FIX HERE
-    const request_user_follows = JSON.parse(document.getElementById('request_user_follows_id').textContent);
+
     var unfollowButton = document.querySelector('.unfollow')
 
     if (typeof (unfollowButton) != 'undefined' && unfollowButton != null) {
         unfollowButton.addEventListener('click', event => {
             element = event.target
+            const request_user_follows = JSON.parse(document.getElementById('request_user_follows_id').textContent);
             fetch('../follower/' + request_user_follows)
                 .then(response => response.json())
                 .then(post => {
