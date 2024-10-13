@@ -11,7 +11,7 @@
         <p class="margin-left-15"><strong>{{following_num}}</strong> Following</p>
     </div>
 </div>
-
+{% if user.is_authenticated %}
 <div class="col-sm-12 follow">
     {% if request_user_follows == True %}
     <button id="follow-button" class="unfollow btn btn-outline-primary">Unfollow</button>
@@ -26,13 +26,14 @@
     </form>
     {% endif%}
 </div>
+{% endif%}
 <div class="post-section col-sm-12 margin-top-50">
     <hr>
     {% for post in page_obj%}
 
     <div id="post-{{ post.id }}" class="post row">
         <div class="posted-by col-sm-9 d-flex flex-wrap">
-            <p><a href="profile/{{post.posted_by}}"><strong>{{post.posted_by}}</strong></a></p>
+            <p><a href="../profile/{{post.posted_by}}"><strong>{{post.posted_by}}</strong></a></p>
             <p class="post-date margin-left-15">{{post.post_date|date:"F d" }}</p>
         </div>
         {%if post.posted_by == user %}
